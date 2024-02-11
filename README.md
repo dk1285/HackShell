@@ -4,7 +4,7 @@
 
 ## [+] Installation & Usage :atom_symbol:
 ```
-pkg update && pkg upgrade -y 
+apt update && upgrade -y 
 pkg install git python mpv figlet -y
 pip install lolcat
 git clone https://github.com/dk1285/HackShell
@@ -15,12 +15,13 @@ exit
 ```
 ### One Line Command Installation :octocat:
 ```
-pkg update -y && pkg upgrade -y && pkg install git mpv figlet python -y && pip install lolcat && git clone https://github.com/dk1285/HackShell && cd HackShell && chmod +x * && sh install.sh
+apt update && upgrade -y && apt install git -y && pkg install mpv figlet python && pip install lolcat && git clone https://github.com/dk1285/HackShell && cd HackShell && chmod +x * && ./install.sh
 ```
 
 ## [-] How To Remove :electron:
 ```
 cd HackShell
+
 bash rvt.sh
 ```
 
