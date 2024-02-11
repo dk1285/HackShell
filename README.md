@@ -21,7 +21,6 @@ apt update && upgrade -y && apt install git -y && pkg install mpv figlet python 
 ## [-] How To Remove :electron:
 ```
 cd HackShell
-
 bash rvt.sh
 ```
 
