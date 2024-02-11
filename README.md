@@ -12,7 +12,6 @@ git clone https://github.com/dk1285/HackShell
 cd HackShell
 chmod +x *
 sh install.sh
-exit
 ```
 ### One Line Command Installation :octocat:
 ```
