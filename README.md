@@ -1,6 +1,6 @@
-# Termux Interface Changer 
+# HackShell v1.1 - Termux Interface Changer 
 
-#### HackShell Is Termux Banner Or Interface With New Grafical Interface Shell And Wellcome Robot Like Jarvis In Iron Man Movie.
+#### HackShell is a Termux Banner/Interface with Graphical Interface Shell and Welcome Robot Like Jarvis in Iron Man Movie. Now with multiple themes and customization options!
 
 ## [+] Installation & Usage :atom_symbol:
 ```
@@ -16,6 +16,21 @@ sh install.sh
 ## One Line Command Installation :octocat:
 ```
 pkg update -y && pkg upgrade -y && pkg install git mpv figlet python -y && pip install lolcat && git clone https://github.com/dk1285/HackShell && cd HackShell && chmod +x * && sh install.sh
+```
+
+## What's New in v1.1 :rocket:
+
+- **Multiple Themes**: Choose from 5 different themes (hacker, matrix, cyberpunk, midnight, blood)
+- **System Information Display**: View memory, storage, battery status, and uptime
+- **Custom User Greeting**: Personalize your terminal with your name
+- **Interactive Configuration Menu**: Easily customize all aspects of HackShell
+- **Battery Status Indicator**: Monitor your battery directly in the prompt
+- **Multiple Banner Styles**: Choose from various ASCII art banner options
+
+## How to Configure :gear:
+```
+cd HackShell
+bash config.sh
 ```
 
 ## ScreenShot
