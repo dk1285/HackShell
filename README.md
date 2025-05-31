@@ -185,8 +185,7 @@ bash rvt.sh
 
 ## 👨‍💻 Connect with Developer
 
-[![WhatsApp](https://img.shields.io/badge/WhatsApp-DK-lightgreen?style=for-the-badge&logo=whatsapp)](https://whatsapp.com/channel/0029Va9e5PFBqbr0gMgy0w3D)
-[![Instagram](https://img.shields.io/badge/Instagram-DK-pink?style=for-the-badge&logo=instagram)](https://instagram.com/cyber._.dk)
+[![Instagram](https://img.shields.io/badge/Instagram-DK-pink?style=for-the-badge&logo=instagram)](https://instagram.com/dk.gz)
 [![Telegram](https://img.shields.io/badge/TELEGRAM-DK-blue?style=for-the-badge&logo=telegram)](https://t.me/cyber_dk)
 
 🚧 **Developer Stats:**
