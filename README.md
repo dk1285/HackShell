@@ -191,10 +191,10 @@ bash rvt.sh
 
 🚧 **Developer Stats:**
 <!-- TODO-IST:START -->
-🏆  8,157 Karma Points<br>
-🌸  Completed 0 Tasks Today<br>
-✅  Completed 353 Tasks So Far<br>
-⏳   Longest Streak Is 10 Days<br>
+🏆  8,209 Karma Points<br>
+🌸  Completed 45 Tasks Today<br>
+✅  Completed 548 Tasks So Far<br>
+⏳   Longest Streak Is 16 Days<br>
 <!-- TODO-IST:END -->
 
 ---
@@ -209,5 +209,5 @@ If HackShell has enhanced your Termux experience, consider supporting the projec
 
 <div align="center">
 <p>Made with ❤️ by Team ILLUSION || DK</p>
-<p>© 2025 HackShell - MIT License</p>
+<p>© 2025 HackShell - Team ILLUSION</p>
 </div>
