@@ -68,10 +68,15 @@ main_menu() {
         echo -e "${cyan}[5]${reset} Change Banner Style"
         echo -e "${cyan}[6]${reset} Toggle Welcome Sound"
         echo -e "${cyan}[7]${reset} Utility Tools"
+<<<<<<< HEAD
         echo -e "${cyan}[8]${reset} Set as Default Shell"
         echo -e "${cyan}[9]${reset} Android Tweaks"
         echo -e "${cyan}[10]${reset} Save & Apply"
         echo -e "${cyan}[11]${reset} Save & Exit"
+=======
+        echo -e "${cyan}[8]${reset} Save & Apply"
+        echo -e "${cyan}[9]${reset} Save & Exit"
+>>>>>>> d30509669f6271016fc1b540d3c5ac7ac5e296eb
         echo ""
         read -p "Select an option: " choice
         
@@ -83,6 +88,7 @@ main_menu() {
             5) change_banner ;;
             6) toggle_sound ;;
             7) launch_tools ;;
+<<<<<<< HEAD
             8) set_default_shell ;;
             9) android_tweaks ;;
             10) 
@@ -90,6 +96,13 @@ main_menu() {
                 apply_changes
                 ;;
             11)
+=======
+            8) 
+                save_config
+                apply_changes
+                ;;
+            9)
+>>>>>>> d30509669f6271016fc1b540d3c5ac7ac5e296eb
                 save_config
                 echo -e "${green}Configuration saved. Please restart Termux to apply changes.${reset}"
                 exit 0
@@ -216,10 +229,15 @@ launch_tools() {
             mkdir -p "$HOME/HackShell/tools"
         fi
         
+<<<<<<< HEAD
         # Copy the tools script from the sample directory if available
         if [ -f "$HOME/HackShell/samples/hacktools.sh" ]; then
             cp "$HOME/HackShell/samples/hacktools.sh" "$HOME/HackShell/tools/hacktools.sh"
         fi
+=======
+        # Download or copy the tools script
+        cp "$HOME/HackShell/tools/hacktools.sh" "$HOME/HackShell/tools/hacktools.sh" 2>/dev/null
+>>>>>>> d30509669f6271016fc1b540d3c5ac7ac5e296eb
         
         if [ -f "$HOME/HackShell/tools/hacktools.sh" ]; then
             chmod +x "$HOME/HackShell/tools/hacktools.sh"
@@ -231,6 +249,7 @@ launch_tools() {
     fi
 }
 
+<<<<<<< HEAD
 # Set HackShell as default shell
 set_default_shell() {
     display_header
@@ -719,6 +738,8 @@ EOF
     echo -e "${green}System info toggle created!${reset}"
 }
 
+=======
+>>>>>>> d30509669f6271016fc1b540d3c5ac7ac5e296eb
 # Toggle system info
 toggle_sysinfo() {
     if [ "$SHOW_SYSINFO" = "true" ]; then
