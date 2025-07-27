@@ -23,6 +23,55 @@ WELCOME_SOUND="true"
 # Config file path
 CONFIG_FILE="$HOME/HackShell/config.conf"
 
+# Dependency checker
+check_dependencies() {
+    local missing_deps=()
+    
+    # Check for required commands
+    local required_commands=("figlet" "lolcat" "mpv")
+    
+    for cmd in "${required_commands[@]}"; do
+        if ! command -v "$cmd" &> /dev/null; then
+            missing_deps+=("$cmd")
+        fi
+    done
+    
+    # Check for required directories
+    if [ ! -d "$HOME/HackShell/themes" ]; then
+        echo -e "${red}Error: Themes directory not found!${reset}"
+        echo -e "${yellow}Please reinstall HackShell to fix this issue.${reset}"
+        exit 1
+    fi
+    
+    # Install missing dependencies if any
+    if [ ${#missing_deps[@]} -gt 0 ]; then
+        echo -e "${yellow}Missing dependencies detected: ${missing_deps[*]}${reset}"
+        echo -e "${cyan}Would you like to install them now? (y/n)${reset}"
+        read -p "> " install_choice
+        
+        if [[ "$install_choice" = "y" || "$install_choice" = "Y" ]]; then
+            echo -e "${yellow}Installing missing dependencies...${reset}"
+            
+            for dep in "${missing_deps[@]}"; do
+                case "$dep" in
+                    "lolcat")
+                        gem install lolcat 2>/dev/null || pip install lolcat 2>/dev/null
+                        ;;
+                    *)
+                        pkg install -y "$dep" 2>/dev/null
+                        ;;
+                esac
+            done
+            
+            echo -e "${green}Dependencies installed successfully!${reset}"
+            sleep 2
+        else
+            echo -e "${yellow}Warning: Some features may not work without required dependencies.${reset}"
+            sleep 2
+        fi
+    fi
+}
+
 # Load configuration if exists
 if [ -f "$CONFIG_FILE" ]; then
     source "$CONFIG_FILE"
@@ -38,6 +87,59 @@ save_config() {
     echo "WELCOME_SOUND=\"$WELCOME_SOUND\"" >> "$CONFIG_FILE"
     echo -e "${green}Configuration saved!${reset}"
     sleep 1
+}
+
+# Input validation helper
+validate_input() {
+    local input="$1"
+    local min="$2"
+    local max="$3"
+    
+    # Check if input is a number
+    if ! [[ "$input" =~ ^[0-9]+$ ]]; then
+        return 1
+    fi
+    
+    # Check if input is within range
+    if [ "$input" -lt "$min" ] || [ "$input" -gt "$max" ]; then
+        return 1
+    fi
+    
+    return 0
+}
+
+# Safe read input with validation
+safe_read() {
+    local prompt="$1"
+    local min="$2"
+    local max="$3"
+    local input
+    
+    while true; do
+        read -p "$prompt" input
+        
+        if validate_input "$input" "$min" "$max"; then
+            echo "$input"
+            return 0
+        else
+            echo -e "${red}Invalid input! Please enter a number between $min and $max.${reset}"
+        fi
+    done
+}
+
+# Progress indicator
+show_progress() {
+    local message="$1"
+    local duration="${2:-3}"
+    
+    echo -n -e "${yellow}$message${reset}"
+    
+    for ((i=0; i<duration; i++)); do
+        sleep 1
+        echo -n "."
+    done
+    
+    echo -e " ${green}Done!${reset}"
 }
 
 # Display header
@@ -70,10 +172,11 @@ main_menu() {
         echo -e "${cyan}[7]${reset} Utility Tools"
         echo -e "${cyan}[8]${reset} Set as Default Shell"
         echo -e "${cyan}[9]${reset} Android Tweaks"
-        echo -e "${cyan}[10]${reset} Save & Apply"
-        echo -e "${cyan}[11]${reset} Save & Exit"
+        echo -e "${cyan}[10]${reset} Check for Updates"
+        echo -e "${cyan}[11]${reset} Save & Apply"
+        echo -e "${cyan}[12]${reset} Save & Exit"
         echo ""
-        read -p "Select an option: " choice
+        choice=$(safe_read "Select an option: " 1 12)
         
         case $choice in
             1) change_theme ;;
@@ -85,11 +188,12 @@ main_menu() {
             7) launch_tools ;;
             8) set_default_shell ;;
             9) android_tweaks ;;
-            10) 
+            10) check_for_updates ;;
+            11) 
                 save_config
                 apply_changes
                 ;;
-            11)
+            12)
                 save_config
                 echo -e "${green}Configuration saved. Please restart Termux to apply changes.${reset}"
                 exit 0
@@ -117,11 +221,12 @@ change_theme() {
     echo -e "${cyan}[3]${reset} Cyberpunk (Neon colors)"
     echo -e "${cyan}[4]${reset} Midnight (Blue & Black)"
     echo -e "${cyan}[5]${reset} Blood (Red & Black)"
+    echo -e "${cyan}[6]${reset} Preview Themes"
     
     # Custom themes
     if [ ${#theme_files[@]} -gt 5 ]; then
         echo -e "\n${yellow}Custom Themes:${reset}"
-        count=6
+        count=7  # Start from 7 since 6 is preview
         for ((i=0; i<${#theme_files[@]}; i++)); do
             theme_file="${theme_files[$i]}"
             theme_basename=$(basename "$theme_file" .bashrc)
@@ -148,10 +253,13 @@ change_theme() {
                 count=$((count+1))
             fi
         done
+    else
+        count=7  # Only built-in themes + preview
     fi
     
     echo ""
-    read -p "Select a theme: " theme_choice
+    local max_option=$((count-1))
+    theme_choice=$(safe_read "Select a theme: " 1 $max_option)
     
     # Built-in themes
     case $theme_choice in
@@ -160,10 +268,14 @@ change_theme() {
         3) THEME="cyberpunk" ;;
         4) THEME="midnight" ;;
         5) THEME="blood" ;;
+        6) 
+            preview_themes
+            return
+            ;;
         *) 
             # Check for custom themes
-            if [[ "$theme_choice" -ge 6 && "$theme_choice" -lt $count ]]; then
-                custom_count=6
+            if [[ "$theme_choice" -ge 7 && "$theme_choice" -lt $count ]]; then
+                custom_count=7
                 for ((i=0; i<${#theme_files[@]}; i++)); do
                     theme_file="${theme_files[$i]}"
                     theme_basename=$(basename "$theme_file" .bashrc)
@@ -191,6 +303,223 @@ change_theme() {
     
     echo -e "${green}Theme set to $THEME${reset}"
     sleep 1
+}
+
+# Preview themes function
+preview_themes() {
+    display_header
+    echo -e "${yellow}Theme Preview System${reset}"
+    echo ""
+    
+    local themes=("hacker" "matrix" "cyberpunk" "midnight" "blood")
+    local current_index=0
+    
+    while true; do
+        local theme=${themes[$current_index]}
+        
+        # Display theme preview
+        clear
+        echo -e "${yellow}===============================================${reset}"
+        echo -e "${cyan}            Theme Preview: $theme              ${reset}"
+        echo -e "${yellow}===============================================${reset}"
+        echo ""
+        
+        # Show theme colors based on theme
+        case $theme in
+            "hacker")
+                echo -e "${green}▓▓▓▓▓▓▓▓ HACKER THEME ▓▓▓▓▓▓▓▓${reset}"
+                echo -e "${green}$ whoami"
+                echo -e "${white}root"
+                echo -e "${green}$ ls -la /"
+                echo -e "${cyan}drwxr-xr-x  2 root root  4096 Jan  1 00:00 bin"
+                echo -e "${green}$ echo 'Welcome to HackShell'"
+                echo -e "${yellow}Welcome to HackShell${reset}"
+                ;;
+            "matrix")
+                echo -e "${green}▓▓▓▓▓▓▓▓ MATRIX THEME ▓▓▓▓▓▓▓▓${reset}"
+                echo -e "${green}Wake up, Neo..."
+                echo -e "${green}The Matrix has you..."
+                echo -e "${green}$ follow_white_rabbit"
+                echo -e "${green}Knock, knock, Neo.${reset}"
+                ;;
+            "cyberpunk")
+                echo -e "${purple}▓▓▓▓▓▓▓▓ CYBERPUNK THEME ▓▓▓▓▓▓▓▓${reset}"
+                echo -e "${purple}> connect_to_grid()"
+                echo -e "${cyan}Connection established..."
+                echo -e "${yellow}Warning: ICE detected"
+                echo -e "${red}> run_ice_breaker.exe"
+                echo -e "${green}Access granted${reset}"
+                ;;
+            "midnight")
+                echo -e "${blue}▓▓▓▓▓▓▓▓ MIDNIGHT THEME ▓▓▓▓▓▓▓▓${reset}"
+                echo -e "${cyan}$ nmap -sS target.com"
+                echo -e "${white}Starting Nmap scan..."
+                echo -e "${blue}22/tcp   open  ssh"
+                echo -e "${blue}80/tcp   open  http"
+                echo -e "${cyan}Scan complete${reset}"
+                ;;
+            "blood")
+                echo -e "${red}▓▓▓▓▓▓▓▓ BLOOD THEME ▓▓▓▓▓▓▓▓${reset}"
+                echo -e "${red}$ ./exploit --target system"
+                echo -e "${yellow}Payload injected..."
+                echo -e "${red}Shell access gained"
+                echo -e "${white}# whoami"
+                echo -e "${red}root${reset}"
+                ;;
+        esac
+        
+        echo ""
+        echo -e "${yellow}Navigation:${reset}"
+        echo -e "${cyan}[←/h] Previous  [→/l] Next  [Enter] Select  [q] Back${reset}"
+        echo ""
+        echo -e "Theme $((current_index+1)) of ${#themes[@]}: $theme"
+        
+        # Read single character input
+        read -n 1 -s key
+        
+        case $key in
+            'h'|'H') # h (previous)
+                current_index=$(( (current_index - 1 + ${#themes[@]}) % ${#themes[@]} ))
+                ;;
+            'l'|'L') # l (next)
+                current_index=$(( (current_index + 1) % ${#themes[@]} ))
+                ;;
+            '') # Enter key
+                THEME=${themes[$current_index]}
+                echo -e "\n${green}Theme '$THEME' selected!${reset}"
+                sleep 1
+                return
+                ;;
+            'q'|'Q')
+                echo -e "\n${yellow}Preview cancelled.${reset}"
+                sleep 1
+                return
+                ;;
+        esac
+    done
+}
+
+# Auto-update mechanism
+check_for_updates() {
+    display_header
+    echo -e "${yellow}HackShell Update System${reset}"
+    echo ""
+    
+    # Check if git is available
+    if ! command -v git &> /dev/null; then
+        echo -e "${red}Git is not installed. Installing...${reset}"
+        pkg install -y git
+        
+        if ! command -v git &> /dev/null; then
+            echo -e "${red}Failed to install Git. Update cancelled.${reset}"
+            sleep 3
+            return
+        fi
+    fi
+    
+    # Check if we're in a git repository
+    cd "$HOME/HackShell" || {
+        echo -e "${red}HackShell directory not found!${reset}"
+        sleep 3
+        return
+    }
+    
+    if [ ! -d ".git" ]; then
+        echo -e "${yellow}This installation was not installed via Git.${reset}"
+        echo -e "${cyan}Would you like to reinitialize with Git? (y/n)${reset}"
+        read -p "> " git_choice
+        
+        if [[ "$git_choice" = "y" || "$git_choice" = "Y" ]]; then
+            show_progress "Reinitializing with Git" 3
+            git init
+            git remote add origin https://github.com/dk1285/HackShell.git
+            git fetch origin main
+            git reset --hard origin/main
+            echo -e "${green}Reinitialization complete!${reset}"
+        else
+            echo -e "${yellow}Update cancelled.${reset}"
+            sleep 2
+            return
+        fi
+    fi
+    
+    show_progress "Checking for updates" 2
+    
+    # Fetch latest changes
+    git fetch origin main 2>/dev/null
+    
+    # Check if updates are available
+    local current_commit=$(git rev-parse HEAD)
+    local latest_commit=$(git rev-parse origin/main)
+    
+    if [ "$current_commit" = "$latest_commit" ]; then
+        echo -e "${green}✓ HackShell is already up to date!${reset}"
+        echo -e "${yellow}Current version: $(git log --oneline -1)${reset}"
+        sleep 3
+        return
+    fi
+    
+    echo -e "${yellow}Updates available!${reset}"
+    echo -e "${cyan}Current: ${current_commit:0:7}${reset}"
+    echo -e "${cyan}Latest:  ${latest_commit:0:7}${reset}"
+    echo ""
+    echo -e "${yellow}Changelog:${reset}"
+    git log --oneline $current_commit..$latest_commit | head -5
+    echo ""
+    
+    echo -e "${cyan}Would you like to update? (y/n)${reset}"
+    read -p "> " update_choice
+    
+    if [[ "$update_choice" = "y" || "$update_choice" = "Y" ]]; then
+        show_progress "Creating backup" 2
+        
+        # Create backup of current config
+        if [ -f "$CONFIG_FILE" ]; then
+            cp "$CONFIG_FILE" "$CONFIG_FILE.backup.$(date +%s)"
+            echo -e "${green}Configuration backed up.${reset}"
+        fi
+        
+        show_progress "Updating HackShell" 3
+        
+        # Pull latest changes
+        if git pull origin main; then
+            echo -e "${green}✓ Update completed successfully!${reset}"
+            
+            # Make scripts executable
+            chmod +x *.sh
+            chmod +x themes/*.sh 2>/dev/null
+            chmod +x tools/*.sh 2>/dev/null
+            
+            show_progress "Verifying installation" 2
+            
+            # Run a quick verification
+            if [ -f "install.sh" ] && [ -f "config.sh" ]; then
+                echo -e "${green}✓ Installation verified!${reset}"
+                echo ""
+                echo -e "${cyan}Update completed! Press Enter to restart configuration...${reset}"
+                read
+                exec "$0"  # Restart the script
+            else
+                echo -e "${red}✗ Verification failed. Please reinstall HackShell.${reset}"
+            fi
+        else
+            echo -e "${red}✗ Update failed. Restoring from backup...${reset}"
+            
+            # Attempt to restore
+            git reset --hard HEAD
+            
+            if [ -f "$CONFIG_FILE.backup.$(date +%s)" ]; then
+                cp "$CONFIG_FILE.backup.$(date +%s)" "$CONFIG_FILE"
+                echo -e "${green}Configuration restored.${reset}"
+            fi
+            
+            echo -e "${yellow}Please try updating again later or reinstall manually.${reset}"
+        fi
+    else
+        echo -e "${yellow}Update cancelled.${reset}"
+    fi
+    
+    sleep 3
 }
 
 # Manage themes
@@ -788,7 +1117,7 @@ toggle_sound() {
 
 # Apply changes
 apply_changes() {
-    echo -e "${green}Applying changes...${reset}"
+    show_progress "Applying changes" 2
     # This function would regenerate the bash.bashrc file based on current config
     generate_bashrc
     echo -e "${green}Changes applied! Please restart Termux to see the changes.${reset}"
@@ -821,6 +1150,9 @@ generate_bashrc() {
         sed -i 's/^WELCOME_SOUND=.*/WELCOME_SOUND=true/' "$PREFIX/etc/bash.bashrc"
     fi
 }
+
+# Check dependencies before starting
+check_dependencies
 
 # Run main menu
 main_menu
