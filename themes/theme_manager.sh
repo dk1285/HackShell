@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# HackShell v1.1 - Theme Manager
+# HackShell v1.1 - Enhanced Theme Manager
 # Created by Team ILLUSION || DK
 
 # Colors
@@ -18,6 +18,10 @@ THEMES_DIR="$HOME/HackShell/themes"
 MARKETPLACE_DIR="$THEMES_DIR/marketplace"
 TEMP_DIR="$HOME/HackShell/temp"
 
+# Create directories if they don't exist
+mkdir -p "$MARKETPLACE_DIR"
+mkdir -p "$TEMP_DIR"
+
 # Display header
 display_header() {
     clear
@@ -26,6 +30,37 @@ display_header() {
     echo -e "${cyan}===============================================${reset}"
     echo -e "${green}Created by Team ILLUSION || DK${reset}"
     echo ""
+}
+
+# Progress indicator
+show_progress() {
+    local message="$1"
+    local duration="${2:-3}"
+    
+    echo -n -e "${yellow}$message${reset}"
+    
+    for ((i=0; i<duration; i++)); do
+        sleep 1
+        echo -n "."
+    done
+    
+    echo -e " ${green}Done!${reset}"
+}
+
+# Get theme metadata
+get_theme_info() {
+    local theme_file="$1"
+    
+    if [ ! -f "$theme_file" ]; then
+        return 1
+    fi
+    
+    local name=$(grep "^THEME_NAME=" "$theme_file" 2>/dev/null | cut -d'"' -f2)
+    local author=$(grep "^THEME_AUTHOR=" "$theme_file" 2>/dev/null | cut -d'"' -f2)
+    local version=$(grep "^THEME_VERSION=" "$theme_file" 2>/dev/null | cut -d'"' -f2)
+    local description=$(grep "^THEME_DESCRIPTION=" "$theme_file" 2>/dev/null | cut -d'"' -f2)
+    
+    echo "$name|$author|$version|$description"
 }
 
 # Main menu

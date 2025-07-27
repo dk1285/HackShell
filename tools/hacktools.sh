@@ -36,9 +36,11 @@ main_menu() {
         display_header
         echo -e "${cyan}[1]${reset} Network Tools"
         echo -e "${cyan}[2]${reset} System Monitor"
-        echo -e "${cyan}[3]${reset} Package Manager"
-        echo -e "${cyan}[4]${reset} File Manager"
-        echo -e "${cyan}[5]${reset} Return to Shell"
+        echo -e "${cyan}[3]${reset} Advanced System Dashboard"
+        echo -e "${cyan}[4]${reset} Performance Monitor"
+        echo -e "${cyan}[5]${reset} Package Manager"
+        echo -e "${cyan}[6]${reset} File Manager"
+        echo -e "${cyan}[7]${reset} Return to Shell"
         echo ""
         read -p "Select an option: " choice
         
@@ -64,6 +66,22 @@ main_menu() {
                 fi
                 ;;
             3) 
+                if [ -f "$TOOLS_DIR/system_monitor.sh" ]; then
+                    bash "$TOOLS_DIR/system_monitor.sh"
+                else
+                    echo -e "${red}Advanced system monitor not found!${reset}"
+                    sleep 2
+                fi
+                ;;
+            4) 
+                if [ -f "$TOOLS_DIR/performance_monitor.sh" ]; then
+                    bash "$TOOLS_DIR/performance_monitor.sh"
+                else
+                    echo -e "${red}Performance monitor not found!${reset}"
+                    sleep 2
+                fi
+                ;;
+            5) 
                 if [ -f "$PACKAGE_TOOLS" ]; then
                     bash "$PACKAGE_TOOLS"
                 else
@@ -73,7 +91,7 @@ main_menu() {
                     bash "$PACKAGE_TOOLS"
                 fi
                 ;;
-            4) 
+            6) 
                 if [ -f "$FILE_TOOLS" ]; then
                     bash "$FILE_TOOLS"
                 else
@@ -83,7 +101,7 @@ main_menu() {
                     bash "$FILE_TOOLS"
                 fi
                 ;;
-            5) 
+            7) 
                 echo -e "${green}Returning to shell...${reset}"
                 exit 0
                 ;;
