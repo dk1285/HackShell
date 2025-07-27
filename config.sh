@@ -108,6 +108,31 @@ validate_input() {
     return 0
 }
 
+# Sanitize user input to prevent command injection
+sanitize_input() {
+    local input="$1"
+    
+    # Remove dangerous characters
+    echo "$input" | sed 's/[;&|`$()]//g' | sed 's/[<>]//g'
+}
+
+# Validate file path to prevent directory traversal
+validate_path() {
+    local path="$1"
+    local base_dir="$2"
+    
+    # Convert to absolute path
+    local abs_path=$(realpath "$path" 2>/dev/null)
+    local abs_base=$(realpath "$base_dir" 2>/dev/null)
+    
+    # Check if path is within base directory
+    if [[ "$abs_path" == "$abs_base"* ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 # Safe read input with validation
 safe_read() {
     local prompt="$1"
@@ -142,6 +167,103 @@ show_progress() {
     echo -e " ${green}Done!${reset}"
 }
 
+# Backup system
+create_backup() {
+    local backup_name="${1:-$(date +%Y%m%d_%H%M%S)}"
+    local backup_dir="$HOME/HackShell/backups"
+    
+    # Create backup directory
+    mkdir -p "$backup_dir"
+    
+    show_progress "Creating backup" 2
+    
+    # Create backup archive
+    local backup_file="$backup_dir/hackshell_backup_$backup_name.tar.gz"
+    
+    cd "$HOME/HackShell" || return 1
+    
+    tar -czf "$backup_file" \
+        config.conf \
+        themes/ \
+        --exclude="themes/marketplace" \
+        --exclude="themes/temp" \
+        2>/dev/null
+    
+    if [ $? -eq 0 ]; then
+        echo -e "${green}✓ Backup created: $backup_file${reset}"
+        return 0
+    else
+        echo -e "${red}✗ Backup failed${reset}"
+        return 1
+    fi
+}
+
+# Restore from backup
+restore_backup() {
+    local backup_dir="$HOME/HackShell/backups"
+    
+    if [ ! -d "$backup_dir" ] || [ -z "$(ls -A $backup_dir)" ]; then
+        echo -e "${red}No backups found!${reset}"
+        sleep 2
+        return 1
+    fi
+    
+    echo -e "${yellow}Available backups:${reset}"
+    echo ""
+    
+    local backups=($(ls -1 "$backup_dir"/*.tar.gz 2>/dev/null))
+    local count=1
+    
+    for backup in "${backups[@]}"; do
+        local backup_name=$(basename "$backup" .tar.gz)
+        local backup_date=$(echo "$backup_name" | grep -o '[0-9]\{8\}_[0-9]\{6\}')
+        if [ -n "$backup_date" ]; then
+            local formatted_date=$(echo "$backup_date" | sed 's/\([0-9]\{4\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)_\([0-9]\{2\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)/\1-\2-\3 \4:\5:\6/')
+            echo -e "${cyan}[$count]${reset} $formatted_date"
+        else
+            echo -e "${cyan}[$count]${reset} $backup_name"
+        fi
+        count=$((count+1))
+    done
+    
+    echo -e "${cyan}[0]${reset} Cancel"
+    echo ""
+    
+    local max_option=$((count-1))
+    local choice=$(safe_read "Select backup to restore: " 0 $max_option)
+    
+    if [ "$choice" -eq 0 ]; then
+        echo -e "${yellow}Restore cancelled${reset}"
+        return 0
+    fi
+    
+    local selected_backup="${backups[$((choice-1))]}"
+    
+    echo -e "${yellow}This will overwrite your current configuration!${reset}"
+    echo -e "${red}Are you sure? (y/N)${reset}"
+    read -p "> " confirm
+    
+    if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
+        echo -e "${yellow}Restore cancelled${reset}"
+        return 0
+    fi
+    
+    show_progress "Restoring backup" 3
+    
+    cd "$HOME/HackShell" || return 1
+    
+    if tar -xzf "$selected_backup"; then
+        echo -e "${green}✓ Backup restored successfully!${reset}"
+        echo -e "${yellow}Please restart the configuration to apply changes.${reset}"
+        sleep 3
+        return 0
+    else
+        echo -e "${red}✗ Restore failed${reset}"
+        sleep 2
+        return 1
+    fi
+}
+
 # Display header
 display_header() {
     clear
@@ -165,35 +287,41 @@ main_menu() {
         echo ""
         echo -e "${cyan}[1]${reset} Change Theme"
         echo -e "${cyan}[2]${reset} Theme Manager"
-        echo -e "${cyan}[3]${reset} Toggle System Info Display"
-        echo -e "${cyan}[4]${reset} Set Custom Greeting Name"
-        echo -e "${cyan}[5]${reset} Change Banner Style"
-        echo -e "${cyan}[6]${reset} Toggle Welcome Sound"
-        echo -e "${cyan}[7]${reset} Utility Tools"
-        echo -e "${cyan}[8]${reset} Set as Default Shell"
-        echo -e "${cyan}[9]${reset} Android Tweaks"
-        echo -e "${cyan}[10]${reset} Check for Updates"
-        echo -e "${cyan}[11]${reset} Save & Apply"
-        echo -e "${cyan}[12]${reset} Save & Exit"
+        echo -e "${cyan}[3]${reset} Create Custom Theme"
+        echo -e "${cyan}[4]${reset} Toggle System Info Display"
+        echo -e "${cyan}[5]${reset} Set Custom Greeting Name"
+        echo -e "${cyan}[6]${reset} Change Banner Style"
+        echo -e "${cyan}[7]${reset} Toggle Welcome Sound"
+        echo -e "${cyan}[8]${reset} Utility Tools"
+        echo -e "${cyan}[9]${reset} Set as Default Shell"
+        echo -e "${cyan}[10]${reset} Android Tweaks"
+        echo -e "${cyan}[11]${reset} Check for Updates"
+        echo -e "${cyan}[12]${reset} Backup Configuration"
+        echo -e "${cyan}[13]${reset} Restore Configuration"
+        echo -e "${cyan}[14]${reset} Save & Apply"
+        echo -e "${cyan}[15]${reset} Save & Exit"
         echo ""
-        choice=$(safe_read "Select an option: " 1 12)
+        choice=$(safe_read "Select an option: " 1 15)
         
         case $choice in
             1) change_theme ;;
             2) manage_themes ;;
-            3) toggle_sysinfo ;;
-            4) set_custom_name ;;
-            5) change_banner ;;
-            6) toggle_sound ;;
-            7) launch_tools ;;
-            8) set_default_shell ;;
-            9) android_tweaks ;;
-            10) check_for_updates ;;
-            11) 
+            3) create_custom_theme ;;
+            4) toggle_sysinfo ;;
+            5) set_custom_name ;;
+            6) change_banner ;;
+            7) toggle_sound ;;
+            8) launch_tools ;;
+            9) set_default_shell ;;
+            10) android_tweaks ;;
+            11) check_for_updates ;;
+            12) create_backup ;;
+            13) restore_backup ;;
+            14) 
                 save_config
                 apply_changes
                 ;;
-            12)
+            15)
                 save_config
                 echo -e "${green}Configuration saved. Please restart Termux to apply changes.${reset}"
                 exit 0
@@ -520,6 +648,18 @@ check_for_updates() {
     fi
     
     sleep 3
+}
+
+# Create custom theme
+create_custom_theme() {
+    if [ -f "$HOME/HackShell/tools/theme_wizard.sh" ]; then
+        bash "$HOME/HackShell/tools/theme_wizard.sh"
+    else
+        echo -e "${red}Theme wizard not found!${reset}"
+        echo -e "${yellow}Creating theme wizard...${reset}"
+        # The wizard file should exist, but just in case
+        sleep 2
+    fi
 }
 
 # Manage themes
@@ -1067,11 +1207,26 @@ set_custom_name() {
     display_header
     echo -e "Enter your name for custom greeting:"
     echo -e "(Leave empty to remove custom greeting)"
+    echo -e "${yellow}Note: Special characters will be filtered for security${reset}"
     echo ""
     read -p "> " custom_name
-    CUSTOM_NAME="$custom_name"
-    echo -e "${green}Custom name set!${reset}"
-    sleep 1
+    
+    # Sanitize input
+    custom_name=$(sanitize_input "$custom_name")
+    
+    # Additional validation - only allow alphanumeric and common safe characters
+    if [[ "$custom_name" =~ ^[a-zA-Z0-9\ ._-]*$ ]]; then
+        CUSTOM_NAME="$custom_name"
+        if [ -n "$custom_name" ]; then
+            echo -e "${green}Custom name set to: $custom_name${reset}"
+        else
+            echo -e "${yellow}Custom greeting removed${reset}"
+        fi
+    else
+        echo -e "${red}Invalid characters detected! Name not changed.${reset}"
+        echo -e "${yellow}Please use only letters, numbers, spaces, dots, underscores, and dashes.${reset}"
+    fi
+    sleep 2
 }
 
 # Change banner style

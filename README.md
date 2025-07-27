@@ -1,13 +1,13 @@
 <div align="center">
 
-# 🔮 HackShell v1.1
+# 🔮 HackShell v1.2 Enhanced
 
-[![Version](https://img.shields.io/badge/Version-1.1-blue?style=for-the-badge&logo=github)](https://github.com/dk1285/HackShell)
+[![Version](https://img.shields.io/badge/Version-1.2%20Enhanced-blue?style=for-the-badge&logo=github)](https://github.com/dk1285/HackShell)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/dk1285/HackShell?style=for-the-badge&color=yellow)](https://github.com/dk1285/HackShell/stargazers)
 [![Issues](https://img.shields.io/github/issues/dk1285/HackShell?style=for-the-badge&color=red)](https://github.com/dk1285/HackShell/issues)
 
-**Transform your Termux into a visually stunning, feature-rich terminal environment with 19 unique themes**
+**Transform your Termux into a visually stunning, feature-rich terminal environment with enhanced themes, real-time monitoring, and advanced customization**
 
 <img src="https://profile-counter.glitch.me/dk1285/count.svg" alt="Visitors">
 
@@ -39,25 +39,43 @@ HackShell transforms your Android Termux environment into an advanced terminal i
 
 ### Core Features
 
-- **🎭 Extensive Theme Collection** - 19 unique themes with custom color schemes and visual elements
-- **📊 System Monitoring** - Visually appealing display of memory, storage, battery, and CPU status
+- **🎭 Extensive Theme Collection** - 6 unique themes with custom color schemes and visual elements (including new Neon City theme)
+- **🎨 Interactive Theme Preview** - Live preview system with arrow key navigation
+- **🛠️ Theme Creation Wizard** - Create your own custom themes with guided wizard
+- **📊 Advanced System Monitoring** - Real-time system dashboard with CPU, memory, battery, and network stats
+- **⚡ Performance Monitor** - Track system performance over time with optimization tips
 - **👤 Personalization** - Custom greeting messages and prompts tailored to your preferences
+- **🔄 Auto-Update System** - One-click updates with backup and restore functionality
+- **💾 Backup & Restore** - Protect your configurations with automated backup system
 - **⚡ Performance** - Optimized for Android devices with minimal resource usage
-- **🔄 Easy Updates** - Simple update mechanism to get the latest features
 
 ### Enhanced Functionality
 
-- **🧩 Theme Manager** - Create, import, and export custom themes
-- **🔍 Utility Tools** - Network diagnostics, system monitoring, and maintenance tools
-- **🔋 Battery Monitoring** - Status indicator in prompt with color-coded warnings
-- **🖥️ Multiple Banner Styles** - Choose from various ASCII art banners
-- **🔐 Security Features** - Privacy-focused utilities and information
+- **🧩 Enhanced Theme Manager** - Create, import, export, and preview custom themes
+- **🔍 Advanced Utility Tools** - Network diagnostics, system monitoring, performance tracking, and maintenance tools
+- **🔋 Smart Battery Monitoring** - Status indicator in prompt with color-coded warnings and detailed stats
+- **🖥️ Multiple Banner Styles** - Choose from various ASCII art banners with custom options
+- **🔐 Enhanced Security** - Input validation, sanitization, and secure file handling
+- **📈 Performance Analytics** - Track and analyze system performance with historical data
+- **🎯 Progress Indicators** - Visual feedback for all operations
+- **⚠️ Error Handling** - Robust error handling with helpful error messages
+
+### New in Enhanced Version
+
+- **🎮 Interactive Theme Preview** - Navigate themes with keyboard controls and live demonstrations
+- **🎨 Theme Creation Wizard** - Step-by-step guided theme creation with color picker
+- **📊 Real-time System Dashboard** - Live monitoring of system resources
+- **📈 Performance Monitoring** - Historical performance tracking with optimization suggestions
+- **🔄 Git-based Auto-Updates** - Smart update system with conflict resolution
+- **💾 Configuration Backup** - Automated backup and restore for user configurations
+- **🛡️ Security Enhancements** - Input sanitization and validation to prevent command injection
+- **⚡ Progress Feedback** - Visual progress indicators for better user experience
 
 ---
 
 ## 🎨 Available Themes
 
-HackShell offers a diverse collection of 19 professionally designed themes:
+HackShell offers a diverse collection of professionally designed themes:
 
 ### 🏆 Premium Themes
 
@@ -65,7 +83,18 @@ HackShell offers a diverse collection of 19 professionally designed themes:
 |-------|-------------|-------|
 | **Cybersecurity Pro** | Professional blue & gray theme for security researchers | Modern, Clean |
 | **Minimalist Pro** | Clean, distraction-free interface with subtle accents | Minimalist |
-| **Neon City Pro** | Vibrant cyberpunk aesthetics with neon colors | Futuristic |
+| **Neon City Pro** | Vibrant cyberpunk aesthetics with electric neon colors | Futuristic |
+
+### 🌟 Featured Themes
+
+| Theme | Description | Style |
+|-------|-------------|-------|
+| **Neon City** | 🆕 Electric cyberpunk with vibrant neon colors and animations | Dynamic |
+| **Hacker** | Classic green-on-black hacker aesthetic | Traditional |
+| **Matrix** | Digital rain effect with green variations | Iconic |
+| **Cyberpunk** | Neon colors with futuristic elements | Edgy |
+| **Midnight** | Deep blues with professional appearance | Sleek |
+| **Blood** | Dark reds and blacks for dramatic effect | Intense |
 
 ### 🌍 Nature & Environment
 
@@ -134,31 +163,37 @@ pkg update -y && pkg upgrade -y && pkg install git mpv figlet python -y && pip i
 
 ## 🔧 Configuration
 
-HackShell features an interactive configuration menu to customize your experience:
+HackShell features an enhanced interactive configuration menu to customize your experience:
 
 ```bash
 cd HackShell
 bash config.sh
 ```
 
-The configuration menu allows you to:
+The enhanced configuration menu allows you to:
 
-- Switch between themes
-- Manage theme marketplace
-- Toggle system information display
-- Set custom greeting name
-- Change banner styles
-- Toggle welcome sounds
-- Access utility tools
+### 🎨 Theme Management
+- **Switch between themes** with instant preview
+- **Interactive theme preview** with live demonstrations
+- **Create custom themes** using the built-in wizard
+- **Manage theme marketplace** for community themes
 
----
+### ⚙️ System Settings
+- **Toggle system information display** with detailed stats
+- **Set custom greeting name** with input validation
+- **Change banner styles** from multiple options
+- **Toggle welcome sounds** and audio feedback
 
-## 🧰 Utility Tools
+### 🛠️ Advanced Features
+- **Auto-update system** with Git integration
+- **Backup and restore** configurations
+- **Performance monitoring** and optimization
+- **Android-specific tweaks** and permissions
 
-HackShell includes powerful utility tools for system management:
-
+### 🔧 Utility Tools
 - **Network Tools**: Speed test, IP info, port scanner
-- **System Monitor**: Hardware and software diagnostics
+- **System Monitor**: Hardware and software diagnostics with real-time stats
+- **Performance Monitor**: Track system performance over time
 - **Package Manager**: GUI interface for package management
 - **File Manager**: Common file operations with visual interface
 - **Security Tools**: Basic security scanning and auditing
@@ -169,6 +204,13 @@ Access tools via the configuration menu or directly:
 cd HackShell/tools
 bash hacktools.sh
 ```
+
+### 🎯 New Features
+- **Input validation** prevents errors and security issues
+- **Progress indicators** provide visual feedback
+- **Error handling** with helpful messages
+- **Backup system** protects your configurations
+- **Theme wizard** for creating custom themes
 
 ---
 
@@ -206,7 +248,51 @@ If HackShell has enhanced your Termux experience, consider supporting the projec
 
 ---
 
+## 📋 Changelog
+
+### v1.2 Enhanced (Latest)
+
+**🔥 Major Improvements:**
+- ✅ **Fixed Critical Bugs**: Resolved duplicate menus and syntax errors
+- 🎨 **Interactive Theme Preview**: Live theme demonstrations with keyboard navigation
+- 🛠️ **Theme Creation Wizard**: Step-by-step custom theme creation with color picker
+- 📊 **Advanced System Monitor**: Real-time CPU, memory, battery, and network monitoring
+- 📈 **Performance Tracker**: Historical performance data with optimization tips
+- 🔄 **Auto-Update System**: Git-based updates with backup and rollback
+- 💾 **Backup & Restore**: Protect configurations with automated backup system
+- 🛡️ **Enhanced Security**: Input validation and sanitization
+- ⚡ **Progress Indicators**: Visual feedback for all operations
+- 🎯 **Better UX**: Improved error handling and user guidance
+
+**🆕 New Features:**
+- Interactive theme preview with arrow key navigation
+- Custom theme creation wizard with RGB color picker
+- Real-time system dashboard with live stats
+- Performance monitoring with historical data
+- One-click auto-update with conflict resolution
+- Configuration backup and restore system
+- Enhanced input validation and security
+- Progress indicators for better feedback
+
+**🐛 Bug Fixes:**
+- Fixed duplicate menu options in configuration
+- Resolved sed syntax error in keyboard layout setup
+- Fixed unclosed quotes in interactive prompts
+- Improved error handling throughout the system
+
+### v1.1 (Previous)
+
+**🎯 What's New in v1.1:**
+- Multiple themes (hacker, matrix, cyberpunk, midnight, blood)
+- System information display
+- Custom user greeting
+- Interactive configuration menu
+- Battery status indicator
+- New ASCII art banner options
+
+---
+
 <div align="center">
 <p>Made with ❤️ by Team ILLUSION || DK</p>
-<p>© 2025 HackShell - Team ILLUSION</p>
+<p>© 2025 HackShell v1.2 Enhanced - Team ILLUSION</p>
 </div>
